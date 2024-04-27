@@ -4,28 +4,31 @@ import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 import java.util.TreeMap;
 
-public class TopMovieTypesReducer extends Reducer<Text, LongWritable, Text, LongWritable> {
-    private TreeMap<Long, String> topMovieTypes = new TreeMap<>();
+public class TopMovieTypesReducer extends Reducer<NullWritable, Text, NullWritable, Text> {
+
+    private TreeMap<Long, Text> top10 = new TreeMap<Long, Text>();
 
     @Override
-    public void reduce(Text key, Iterable<LongWritable> values, Context context)
+    public void reduce(NullWritable key, Iterable<Text> values, Context context)
             throws IOException, InterruptedException {
-        long sum = 0;
-        for (LongWritable val : values) {
-            sum += val.get();
-        }
-        topMovieTypes.put(sum, key.toString());
 
-        // Only keep top 10
-        if (topMovieTypes.size() > 10) {
-            topMovieTypes.remove(topMovieTypes.firstKey());
+        for (Text val : values) {
+            // parse the input data to get moveiNmae and revenue
+            String[] parts = val.toString().split(",");
+            String movieName = parts[0];
+            long revenue = Long.parseLong(parts[1]);
+            // Add movie name and revenue to our map with the revenue as the key
+            top10.put(revenue, new Text(movieName + "," + String.valueOf(revenue)));
+            if (top10.size() > 10) {
+                top10.remove(top10.firstKey());
+            }
         }
+        for (Text t : top10.descendingMap().values()) {
+            // Output our ten records to the file system
+            // with a null key
+            context.write(NullWritable.get(), t);
+        }
+
     }
 
-    @Override
-    protected void cleanup(Context context) throws IOException, InterruptedException {
-        for (Long key : topMovieTypes.descendingKeySet()) {
-            context.write(new Text(topMovieTypes.get(key)), new LongWritable(key));
-        }
-    }
 }
