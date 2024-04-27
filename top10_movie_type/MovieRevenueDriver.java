@@ -19,8 +19,8 @@ public class MovieRevenueDriver {
         job.setMapperClass(MovieRevenueMapper.class);
         job.setReducerClass(TopMovieTypesReducer.class);
         job.setNumReduceTasks(1);
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(LongWritable.class);
+        job.setOutputKeyClass(NullWritable.class);
+        job.setOutputValueClass(Text.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
