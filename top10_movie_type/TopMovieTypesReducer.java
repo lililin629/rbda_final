@@ -3,6 +3,7 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import java.io.IOException;
 import java.util.TreeMap;
+import org.apache.hadoop.io.NullWritable;
 
 public class TopMovieTypesReducer extends Reducer<NullWritable, Text, NullWritable, Text> {
 
