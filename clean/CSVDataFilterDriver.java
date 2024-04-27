@@ -21,7 +21,7 @@ public class CSVDataFilterDriver {
         Job job = Job.getInstance(conf, "CSV Data Filter");
         job.setJarByClass(CSVDataFilterDriver.class);
         job.setMapperClass(CSVMapper.class);
-        job.setOutputKeyClass(Text.class);
+        job.setOutputKeyClass(NullWritable.class);
         job.setOutputValueClass(Text.class);
         job.setNumReduceTasks(0);
 

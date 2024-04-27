@@ -8,10 +8,10 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import java.io.IOException;
 import java.util.Scanner;
+import org.apache.hadoop.io.NullWritable;
 
-public class CSVMapper extends Mapper<Object, Text, Text, Text> {
+public class CSVMapper extends Mapper<Object, Text, NullWritable, Text> {
 
-    private Text outputKey = new Text();
     private Text outputValue = new Text();
 
     public void map(Object key, Text value, Context context) throws IOException, InterruptedException {
@@ -33,14 +33,13 @@ public class CSVMapper extends Mapper<Object, Text, Text, Text> {
                 scanner.next(); // Skip 'Time Duration'
                 String director = scanner.next().trim();
 
-                // Format the output as needed
+                // Construct the output value without the movie name as key
                 String output = movieName + "," + movieDate + "," + movieType + "," + movieRevenue + "," + score + ","
                         + metascore + "," + director;
-                outputKey.set(movieName);
                 outputValue.set(output);
 
-                // Write out the key-value pair
-                context.write(outputKey, outputValue);
+                // Emit with null key
+                context.write(NullWritable.get(), outputValue);
             }
         } finally {
             scanner.close();
