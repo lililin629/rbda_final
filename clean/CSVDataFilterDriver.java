@@ -8,6 +8,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 import java.io.IOException;
 import java.util.Scanner;
+import org.apache.hadoop.io.NullWritable;
 
 public class CSVDataFilterDriver {
     public static void main(String[] args) throws Exception {
