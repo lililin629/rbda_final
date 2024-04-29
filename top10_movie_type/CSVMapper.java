@@ -62,32 +62,33 @@ public class CSVMapper extends Mapper<Object, Text, NullWritable, Text> {
         scanner.useDelimiter(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
         try {
-            if (scanner.hasNext()) {
-                String movieName = scanner.next().trim();
-                String movieDate = scanner.next().trim();
-                scanner.next(); // Skip 'Serie Name'
-                scanner.next(); // Skip 'Serie Date'
-                String movieType = scanner.next().trim();
-                scanner.next(); // Skip 'Number of Votes'
-                String movieRevenue = scanner.next().trim();
-                String score = scanner.next().trim();
-                String metascore = scanner.next().trim();
-                scanner.next(); // Skip 'Time Duration'
-                String director = scanner.next().trim();
+            String movieName = safeNext(scanner);
+            String movieDate = safeNext(scanner).replaceAll("[()]", ""); // Clean parentheses from movieDate
+            scanner.next(); // Skip 'Serie Name'
+            scanner.next(); // Skip 'Serie Date'
+            String movieType = safeNext(scanner);
+            scanner.next(); // Skip 'Number of Votes'
+            String movieRevenue = safeNext(scanner);
+            String score = safeNext(scanner);
+            String metascore = safeNext(scanner);
+            scanner.next(); // Skip 'Time Duration'
+            String director = safeNext(scanner).replaceAll("\\[\\'|\\'\\]", ""); // Remove brackets and single quotes
+                                                                                 // from director
 
-                // Removing parentheses from movieDate
-                movieDate = movieDate.replaceAll("[()]", ""); // Regex to remove any parentheses
+            // Format the output value without the movie name as key
+            String output = movieName + "," + movieDate + "," + movieType + "," + movieRevenue + "," + score + ","
+                    + metascore + "," + director;
+            outputValue.set(output);
 
-                // Construct the output value without the movie name as key
-                String output = movieName + "," + movieDate + "," + movieType + "," + movieRevenue + "," + score + ","
-                        + metascore + "," + director;
-                outputValue.set(output);
-
-                // Emit with null key
-                context.write(NullWritable.get(), outputValue);
-            }
+            // Emit with null key
+            context.write(NullWritable.get(), outputValue);
         } finally {
             scanner.close();
         }
+    }
+
+    // Helper method to safely retrieve the next token
+    private String safeNext(Scanner scanner) {
+        return scanner.hasNext() ? scanner.next() : "";
     }
 }
