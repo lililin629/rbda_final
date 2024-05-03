@@ -16,6 +16,9 @@ public class TotalAverageRevenueDriver {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(LongWritable.class);
 
+        // Set the number of reducers to one
+        job.setNumReduceTasks(1);
+
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
