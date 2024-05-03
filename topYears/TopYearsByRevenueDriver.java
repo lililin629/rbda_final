@@ -16,6 +16,9 @@ public class TopYearsByRevenueDriver {
         job.setOutputKeyClass(IntWritable.class);
         job.setOutputValueClass(LongWritable.class);
 
+        // Setting the number of Reduce tasks to 1
+        job.setNumReduceTasks(1);
+
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
 
